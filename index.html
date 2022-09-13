@@ -1,0 +1,118 @@
+<!-- <?php
+// session_start();
+
+?> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+       <title>Registration Form</title>
+       <?php   include'style.php'     ?>
+       <?php   include'links.php'     ?>
+
+</head>
+<body>
+    
+     <?php
+         include 'dbcon.php';
+         if(isset($_POST['submit']))
+          {
+            $username = mysqli_real_escape_string($con,$_POST['username']);
+            $email =  mysqli_real_escape_string($con, $_POST['email']);
+            $mobile =  mysqli_real_escape_string($con, $_POST['mobile']);
+            $password =  mysqli_real_escape_string($con, $_POST['password']);
+            $cpassword = mysqli_real_escape_string($con, $_POST['cpassword']);
+         // password hashing format 
+          $pass =password_hash( $password, PASSWORD_BCRYPT);
+          $cpass =password_hash( $cpassword, PASSWORD_BCRYPT);
+    //   email query  jo email user de raha hai wo already exit na kr raha ho
+        $emailquery = " select * from registration where email='$email' ";
+       //actual data base query reflect ho wo query pass krna
+        $query =mysqli_query($con,$emailquery);
+        // if email and password ak se jiyade row m hain to usko check krne ki query
+        $emailcount = mysqli_num_rows($query);
+          if($emailcount>0) 
+             {
+                
+                echo "<h4> email already exists</h4>";
+             }
+             else
+               {
+                 if($password === $cpassword)
+                   {
+                    $insertquery =" insert into registration (username,email,mobile,password,cpassword) values('$username ','$email','$mobile','$pass','$cpass')";
+                  //   for database reflection ke liye write iquery
+                    $iquery = mysqli_query($con,$insertquery);
+                      if($con)
+                        {
+                         ?> 
+                            <script>alert("Inserted Successful"); </script>     
+                          <?php
+                        }
+                        else
+                        {
+                         ?>
+                            <script>alert("No Inserted");</script>
+                         <?php
+                        }
+                      }
+                   else
+                      {
+                        ?>
+                          <script>alert("Pssword are not matching");</script>
+                       <?php
+                      } 
+                  
+                  } 
+                   
+               }
+                   
+           ?>
+         <div class="card bg-light">
+            <article class="card-body mx-auto" style="width: 400px;">
+               <h4 class="card-title mt-3 text-center"> Create Account</h4>
+               <p class="text-center">Get started with your free account</p> <p>
+                <a href="" class="btn btn-block btn-gmail"><i class="fa fa-google"></i>  Login via Gmail</a>
+                <a href="" class="btn btn-block btn-facebook"><i class="fa fa-facebook"></i>  Login via facebook</a>
+                </p><p class="divider-text"> <span class="bg-light">OR</span></p>
+                
+                <form  action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+                    <div class="form-group input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-user"></i></span>
+                        </div>
+                        <input type="text" name="username" class="form-control" placeholder="Full name" value="" required>
+                    </div>
+                    <div class="form-group input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                        </div>
+                        <input type="email" name="email" class="form-control" placeholder="Email address" value="" required>
+                    </div>
+                     <div class="form-group input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                        </div>
+                        <input type="number" name="mobile" class="form-control" placeholder="Phone number" value="" required>
+                    </div>
+                     <div class="form-group input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                        </div>
+                        <input type="password" name="password" class="form-control" placeholder="Create password" value="" required>
+                    </div>
+                    <div class="form-group input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                        </div>
+                        <input type="password" name="cpassword" class="form-control" placeholder="Repeat password" value="" required>
+                    </div>
+                    <div class="form-group">
+                      <button type="submit" name="submit" class="btn btn-primary btn-block"> Create Account</button>
+                    </div>
+                    <p class=" text-center">Have an account? <a href="login.php">Log In</a></p>
+                </form>
+            </article>
+         </div>
+    </body>
+</html>
